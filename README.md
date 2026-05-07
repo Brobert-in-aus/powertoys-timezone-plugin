@@ -8,13 +8,14 @@ Use the `tz` action keyword in PowerToys Run:
 
 ```text
 tz 10:30 AM CST to +10
+tz 10:30 AM CET
 tz ten thirty next Friday to AEDT
 tz 22:30 CET to UTC
 tz May 10 10:00 AM UTC to Central European Time
 tz noon GMT-0530 to AEST
 ```
 
-The destination must be the final argument after `to`. If the source timezone is omitted, the source time is interpreted in your local Windows timezone.
+Without `to`, the final timezone is treated as the source timezone and the time is converted to your local Windows timezone. With `to`, the timezone after `to` is the destination; if the source timezone is omitted in that form, the source time is interpreted in your local Windows timezone.
 
 ## Supported Input
 

@@ -134,26 +134,36 @@ internal static class TimeZoneConverter
         }
 
         var normalized = Normalize(input);
-        var match = Regex.Match(normalized, @"^(?<source>.+?)\s+to\s+(?<destination>.+)$", RegexOptions.IgnoreCase);
-        if (!match.Success)
-        {
-            error = "Add a destination with 'to', for example 10:30 AM CST to +10.";
-            return false;
-        }
+        var explicitMatch = Regex.Match(normalized, @"^(?<source>.+?)\s+to\s+(?<destination>.+)$", RegexOptions.IgnoreCase);
+        string left;
+        TimeZoneSpec sourceTimeZone;
+        TimeZoneSpec destinationTimeZone;
 
-        var left = match.Groups["source"].Value.Trim();
-        var destinationText = match.Groups["destination"].Value.Trim();
-        if (!TryParseTimeZone(destinationText, requireFullMatch: true, out var destinationTimeZone, out _))
+        if (explicitMatch.Success)
         {
-            error = "I could not read the destination timezone. Try +10, AEDT, UTC, CET, or Central European Time.";
-            return false;
-        }
+            left = explicitMatch.Groups["source"].Value.Trim();
+            var destinationText = explicitMatch.Groups["destination"].Value.Trim();
+            if (!TryParseTimeZone(destinationText, requireFullMatch: true, out destinationTimeZone, out _))
+            {
+                error = "I could not read the destination timezone. Try +10, AEDT, UTC, CET, or Central European Time.";
+                return false;
+            }
 
-        var sourceTimeZone = TimeZoneSpec.Local();
-        if (TryParseTimeZone(left, requireFullMatch: false, out var parsedSourceTimeZone, out var withoutSourceTimeZone))
+            sourceTimeZone = TimeZoneSpec.Local();
+            if (TryParseTimeZone(left, requireFullMatch: false, out var parsedSourceTimeZone, out var withoutSourceTimeZone))
+            {
+                sourceTimeZone = parsedSourceTimeZone;
+                left = withoutSourceTimeZone;
+            }
+        }
+        else if (TryParseTimeZone(normalized, requireFullMatch: false, out sourceTimeZone, out left) && !string.IsNullOrWhiteSpace(left))
         {
-            sourceTimeZone = parsedSourceTimeZone;
-            left = withoutSourceTimeZone;
+            destinationTimeZone = TimeZoneSpec.Local();
+        }
+        else
+        {
+            error = "Add a source timezone, or use 'to' for a destination, for example 10:30 AM CET or 10:30 AM to CET.";
+            return false;
         }
 
         var sourceToday = GetTodayInZone(nowUtc, sourceTimeZone);

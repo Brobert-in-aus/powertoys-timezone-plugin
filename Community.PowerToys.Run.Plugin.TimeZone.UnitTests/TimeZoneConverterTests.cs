@@ -48,13 +48,33 @@ public sealed class TimeZoneConverterTests
     }
 
     [TestMethod]
-    public void Convert_reports_missing_to_destination()
+    public void Convert_without_to_uses_final_timezone_as_source_and_local_as_destination()
     {
-        var results = TimeZoneConverter.Convert("10:30 AM CST", MayUtc);
+        var results = TimeZoneConverter.Convert("10:30 AM CET", MayUtc);
+        var expected = TimeZoneInfo.ConvertTime(new DateTimeOffset(2026, 5, 7, 10, 30, 0, TimeSpan.FromHours(1)), TimeZoneInfo.Local);
+
+        Assert.AreEqual(1, results.Count);
+        StringAssert.StartsWith(results[0].Title, expected.ToString("h:mm tt"));
+        StringAssert.Contains(results[0].Subtitle, "CET");
+    }
+
+    [TestMethod]
+    public void Convert_with_to_and_no_source_timezone_uses_local_as_source()
+    {
+        var results = TimeZoneConverter.Convert("10 May 10:00 AM to CET", MayUtc);
+
+        Assert.AreEqual(1, results.Count);
+        StringAssert.Contains(results[0].Title, "CET");
+    }
+
+    [TestMethod]
+    public void Convert_reports_missing_timezone_or_destination()
+    {
+        var results = TimeZoneConverter.Convert("10:30 AM", MayUtc);
 
         Assert.AreEqual(1, results.Count);
         Assert.IsFalse(results[0].Success);
-        StringAssert.Contains(results[0].Subtitle, "destination");
+        StringAssert.Contains(results[0].Subtitle, "source timezone");
     }
 
     [TestMethod]
