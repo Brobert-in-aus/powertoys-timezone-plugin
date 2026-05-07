@@ -1,0 +1,14 @@
+{
+  "ID": "A646217CEE134F3185E5AB8FEE7B91EA",
+  "ActionKeyword": "tz",
+  "IsGlobal": false,
+  "Name": "Time Zone Converter",
+  "Author": "Robert",
+  "Version": "0.1.0",
+  "Language": "csharp",
+  "Website": "https://github.com/Brobert-in-aus/powertoys-timezone-plugin",
+  "ExecuteFileName": "Community.PowerToys.Run.Plugin.TimeZone.dll",
+  "IcoPathDark": "Images\\timezone.dark.png",
+  "IcoPathLight": "Images\\timezone.light.png",
+  "DynamicLoading": false
+}
