@@ -86,4 +86,14 @@ public sealed class TimeZoneConverterTests
         Assert.IsFalse(results[0].Success);
         StringAssert.Contains(results[0].Subtitle, "destination timezone");
     }
+
+    [TestMethod]
+    public void Convert_handles_weekday_absolute_date_before_time()
+    {
+        var results = TimeZoneConverter.Convert("Saturday, 16 May 2026, at 15:00 CEST to AEST", MayUtc);
+
+        Assert.AreEqual(1, results.Count);
+        Assert.AreEqual("11:00 PM AEST", results[0].Title);
+        StringAssert.Contains(results[0].Subtitle, "Sat 16 May, 3:00 PM CEST");
+    }
 }
